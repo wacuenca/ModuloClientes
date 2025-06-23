@@ -54,14 +54,24 @@ public class Empresas {
     @Column(name = "version", nullable = false, precision = 9)
     private BigDecimal version;
 
-    @OneToMany(mappedBy = "idParticipe")
-    private Set<AccionistasEmpresas> accionistasEmpresas = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "empresaParticipe")  
+    private Set<AccionistasEmpresas> empresasDondeEsAccionista = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "idEntidad")
+    @OneToMany(mappedBy = "empresa")
+    private Set<AccionistasEmpresas> accionistasDeEstaEmpresa = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "empresa")
     private Set<Clientes> clientes = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "idEmpresa")
+    @OneToMany(mappedBy = "empresa")
     private Set<RepresentantesEmpresas> representantesEmpresas = new LinkedHashSet<>();
+
+    public Empresas() {
+    }
+
+    public Empresas(Integer id) {
+        this.id = id;
+    }
 
     public Integer getId() {
         return id;
@@ -167,12 +177,20 @@ public class Empresas {
         this.version = version;
     }
 
-    public Set<AccionistasEmpresas> getAccionistasEmpresas() {
-        return accionistasEmpresas;
+    public Set<AccionistasEmpresas> getEmpresasDondeEsAccionista() {
+        return empresasDondeEsAccionista;
     }
 
-    public void setAccionistasEmpresas(Set<AccionistasEmpresas> accionistasEmpresas) {
-        this.accionistasEmpresas = accionistasEmpresas;
+    public void setEmpresasDondeEsAccionista(Set<AccionistasEmpresas> empresasDondeEsAccionista) {
+        this.empresasDondeEsAccionista = empresasDondeEsAccionista;
+    }
+
+    public Set<AccionistasEmpresas> getAccionistasDeEstaEmpresa() {
+        return accionistasDeEstaEmpresa;
+    }
+
+    public void setAccionistasDeEstaEmpresa(Set<AccionistasEmpresas> accionistasDeEstaEmpresa) {
+        this.accionistasDeEstaEmpresa = accionistasDeEstaEmpresa;
     }
 
     public Set<Clientes> getClientes() {
@@ -189,6 +207,43 @@ public class Empresas {
 
     public void setRepresentantesEmpresas(Set<RepresentantesEmpresas> representantesEmpresas) {
         this.representantesEmpresas = representantesEmpresas;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Empresas other = (Empresas) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Empresas [id=" + id + ", tipoIdentificacion=" + tipoIdentificacion + ", numeroIdentificacion="
+                + numeroIdentificacion + ", nombreComercial=" + nombreComercial + ", razonSocial=" + razonSocial
+                + ", tipo=" + tipo + ", fechaConstitucion=" + fechaConstitucion + ", correoElectronico="
+                + correoElectronico + ", sectorEconomico=" + sectorEconomico + ", fechaRegistro=" + fechaRegistro
+                + ", fechaActualizacion=" + fechaActualizacion + ", estado=" + estado + ", version=" + version
+                + ", empresasDondeEsAccionista=" + empresasDondeEsAccionista + ", accionistasDeEstaEmpresa="
+                + accionistasDeEstaEmpresa + ", clientes=" + clientes + ", representantesEmpresas="
+                + representantesEmpresas + "]";
     }
 
 }

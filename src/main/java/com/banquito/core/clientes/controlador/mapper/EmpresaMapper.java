@@ -1,4 +1,4 @@
-/*package com.banquito.core.clientes.controlador.mapper;
+package com.banquito.core.clientes.controlador.mapper;
 
 import com.banquito.core.clientes.controlador.dto.EmpresasDTO;
 import com.banquito.core.clientes.modelo.Empresas;
@@ -26,4 +26,4 @@ public interface EmpresaMapper {
     @Mapping(target = "clientes", ignore = true)
     @Mapping(target = "representantesEmpresas", ignore = true)
     Empresas toNewEmpresa(EmpresasDTO dto);
-}*/
+}

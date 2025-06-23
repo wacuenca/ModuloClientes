@@ -1,5 +1,6 @@
 package com.banquito.core.clientes.modelo;
 
+import com.banquito.core.general.modelo.Sucursales;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -8,7 +9,6 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "clientes_sucursales", schema = "public")
 public class ClientesSucursales {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ColumnDefault("nextval('clientes_sucursales_id_cliente_sucursal_seq')")
@@ -19,8 +19,9 @@ public class ClientesSucursales {
     @JoinColumn(name = "id_cliente", nullable = false)
     private Clientes idCliente;
 
-    @Column(name = "codigo_sucursal", nullable = false, length = 10)
-    private String codigoSucursal;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "codigo_sucursal", nullable = false)
+    private Sucursales codigoSucursal;
 
     @ColumnDefault("'ACTIVO'")
     @Column(name = "estado", nullable = false, length = 15)
@@ -29,6 +30,13 @@ public class ClientesSucursales {
     @ColumnDefault("0")
     @Column(name = "version", nullable = false, precision = 9)
     private BigDecimal version;
+
+    public ClientesSucursales() {
+    }
+
+    public ClientesSucursales(Integer id) {
+        this.id = id;
+    }
 
     public Integer getId() {
         return id;
@@ -46,11 +54,11 @@ public class ClientesSucursales {
         this.idCliente = idCliente;
     }
 
-    public String getCodigoSucursal() {
+    public Sucursales getCodigoSucursal() {
         return codigoSucursal;
     }
 
-    public void setCodigoSucursal(String codigoSucursal) {
+    public void setCodigoSucursal(Sucursales codigoSucursal) {
         this.codigoSucursal = codigoSucursal;
     }
 
@@ -69,4 +77,44 @@ public class ClientesSucursales {
     public void setVersion(BigDecimal version) {
         this.version = version;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((idCliente == null) ? 0 : idCliente.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ClientesSucursales other = (ClientesSucursales) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (idCliente == null) {
+            if (other.idCliente != null)
+                return false;
+        } else if (!idCliente.equals(other.idCliente))
+            return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "ClientesSucursales [id=" + id + ", idCliente=" + idCliente + ", codigoSucursal=" + codigoSucursal
+                + ", estado=" + estado + ", version=" + version + "]";
+    }
+
+
+
 }

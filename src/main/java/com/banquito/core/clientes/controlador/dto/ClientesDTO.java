@@ -13,10 +13,8 @@ import java.time.Instant;
 @Builder
 public class ClientesDTO {
     private Integer id;
-
     private TipoEntidad tipoEntidad;
     private Integer idEntidad;
-    
     private String nombre;
     private String nacionalidad; 
     private TipoIdentificacion tipoIdentificacion;

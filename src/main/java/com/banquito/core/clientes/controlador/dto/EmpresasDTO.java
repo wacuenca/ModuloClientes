@@ -13,11 +13,9 @@ import java.time.LocalDate;
 @Builder
 public class EmpresasDTO {
     private Integer id;
-    
     private Integer accionistasEmpresas;
     private Integer clientes;
     private Integer representantesEmpresas;
-
     private TipoIdentificacion tipoIdentificacion;
     private String numeroIdentificacion;
     private String nombreComercial;

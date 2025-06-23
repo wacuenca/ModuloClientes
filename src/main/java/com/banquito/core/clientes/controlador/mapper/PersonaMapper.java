@@ -1,4 +1,4 @@
-/*package com.banquito.core.clientes.controlador.mapper;
+package com.banquito.core.clientes.controlador.mapper;
 
 import com.banquito.core.clientes.controlador.dto.PersonaDTO;
 import com.banquito.core.clientes.modelo.Persona;
@@ -24,4 +24,4 @@ public interface PersonaMapper {
     @Mapping(target = "accionistasEmpresas", ignore = true)
     @Mapping(target = "clientes", ignore = true)
     Persona toNewPersona(PersonaDTO dto);
-}*/
+}

@@ -2,6 +2,8 @@ package com.banquito.core.clientes.controlador.dto;
 
 import com.banquito.core.clientes.enums.EstadoRegistro;
 import com.banquito.core.clientes.enums.RolRepresentante;
+
+import jakarta.persistence.Column;
 import lombok.Builder;
 import lombok.Data;
 
@@ -15,9 +17,11 @@ public class RepresentanteEmpresaDTO {
 
     private Integer idEmpresa;
     private Integer idCliente;
-    
+
     private RolRepresentante rol;
     private Instant fechaAsignacion;
+    private Instant fechaCreacion;
+    private Instant fechaUltimaModificacion;
     private EstadoRegistro estado;
     private BigDecimal version;
 }

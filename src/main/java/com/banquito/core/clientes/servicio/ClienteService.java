@@ -1,15 +1,21 @@
 package com.banquito.core.clientes.servicio;
 
+import com.banquito.core.clientes.controlador.dto.*;
+import com.banquito.core.clientes.controlador.mapper.*;
+import com.banquito.core.clientes.enums.TipoEntidad;
+import com.banquito.core.clientes.enums.TipoIdentificacion;
 import com.banquito.core.clientes.excepcion.*;
-import com.banquito.core.clientes.modelo.*;
+import com.banquito.core.clientes.modelo.Clientes;
+import com.banquito.core.clientes.modelo.Empresas;
+import com.banquito.core.clientes.modelo.Persona;
 import com.banquito.core.clientes.repositorio.*;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -18,35 +24,40 @@ public class ClienteService {
     private final PersonaRepositorio personaRepo;
     private final EmpresasRepositorio empresaRepo;
     private final ClientesRepositorio clienteRepo;
+    private final PersonaMapper personaMapper;
+    private final EmpresaMapper empresaMapper;
+    private final ClientesMapper clientesMapper;
 
     public ClienteService(PersonaRepositorio personaRepo,
-                         EmpresasRepositorio empresaRepo,
-                         ClientesRepositorio clienteRepo) {
+            EmpresasRepositorio empresaRepo,
+            ClientesRepositorio clienteRepo) {
         this.personaRepo = personaRepo;
         this.empresaRepo = empresaRepo;
         this.clienteRepo = clienteRepo;
+        this.personaMapper = PersonaMapper.INSTANCE;
+        this.empresaMapper = EmpresaMapper.INSTANCE;
+        this.clientesMapper = ClientesMapper.INSTANCE;
     }
 
     // ========== MÉTODOS PARA PERSONAS ==========
 
     @Transactional
-    public Persona crearPersona(Persona persona) {
+    public PersonaDTO crearPersona(PersonaDTO personaDTO) {
         try {
-            log.info("Creando persona: {} {}", persona.getTipoIdentificacion(), persona.getNumeroIdentificacion());
+            log.info("Creando persona: {} {}", personaDTO.getTipoIdentificacion(),
+                    personaDTO.getNumeroIdentificacion());
 
             if (personaRepo.existsByTipoAndNumeroIdentificacion(
-                    persona.getTipoIdentificacion(), persona.getNumeroIdentificacion())) {
+                    personaDTO.getTipoIdentificacion().name(),
+                    personaDTO.getNumeroIdentificacion())) {
                 throw new CreacionException("Persona ya existe", 1101);
             }
 
-            persona.setFechaRegistro(Instant.now());
-            persona.setFechaActualizacion(Instant.now());
-            persona.setEstado("ACTIVO");
-            persona.setVersion(BigDecimal.ONE);
-
-            return personaRepo.save(persona);
+            Persona persona = personaMapper.toNewPersona(personaDTO);
+            persona = personaRepo.save(persona);
+            return personaMapper.toDto(persona);
         } catch (CreacionException e) {
-            log.error("Error crear persona: {}", e.getMessage());
+            log.error("Error al crear persona: {}", e.getMessage());
             throw e;
         } catch (Exception e) {
             log.error("Error inesperado al crear persona", e);
@@ -54,13 +65,14 @@ public class ClienteService {
         }
     }
 
-    public Persona obtenerPersona(String tipo, String numero) {
+    public PersonaDTO obtenerPersona(String tipo, String numero) {
         log.info("Obteniendo persona: {} {}", tipo, numero);
-        return personaRepo.findByTipoAndNumeroIdentificacion(tipo, numero)
+        Persona persona = personaRepo.findByTipoAndNumeroIdentificacion(tipo, numero)
                 .orElseThrow(() -> new NotFoundException("Persona no encontrada", 3101));
+        return personaMapper.toDto(persona);
     }
 
-    public List<Persona> buscarPersonas(String nombre) {
+    public List<PersonaDTO> buscarPersonas(String nombre) {
         log.info("Buscando personas: {}", nombre);
         List<Persona> personas = personaRepo.findByNombreLikeOrderByNombreAsc("%" + nombre + "%");
 
@@ -68,28 +80,31 @@ public class ClienteService {
             throw new NotFoundException("No se encontraron personas", 3102);
         }
 
-        return personas.stream().limit(100).toList();
+        return personas.stream()
+                .limit(100)
+                .map(personaMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Transactional
-    public Persona actualizarPersona(Integer id, Persona datos) {
+    public PersonaDTO actualizarPersona(Integer id, PersonaDTO personaDTO) {
         try {
             log.info("Actualizando persona ID: {}", id);
-
             Persona persona = personaRepo.findById(id)
                     .orElseThrow(() -> new NotFoundException("Persona no encontrada", 3103));
 
-            persona.setNombre(datos.getNombre());
-            persona.setGenero(datos.getGenero());
-            persona.setFechaNacimiento(datos.getFechaNacimiento());
-            persona.setEstadoCivil(datos.getEstadoCivil());
-            persona.setNivelEstudio(datos.getNivelEstudio());
-            persona.setCorreoElectronico(datos.getCorreoElectronico());
+            persona.setNombre(personaDTO.getNombre());
+            persona.setGenero(personaDTO.getGenero());
+            persona.setFechaNacimiento(personaDTO.getFechaNacimiento());
+            persona.setEstadoCivil(personaDTO.getEstadoCivil());
+            persona.setNivelEstudio(personaDTO.getNivelEstudio());
+            persona.setCorreoElectronico(personaDTO.getCorreoElectronico());
             persona.setFechaActualizacion(Instant.now());
 
-            return personaRepo.save(persona);
+            persona = personaRepo.save(persona);
+            return personaMapper.toDto(persona);
         } catch (NotFoundException e) {
-            log.error("Error actualizar persona: {}", e.getMessage());
+            log.error("Error al actualizar persona: {}", e.getMessage());
             throw e;
         } catch (Exception e) {
             log.error("Error inesperado al actualizar persona", e);
@@ -100,23 +115,22 @@ public class ClienteService {
     // ========== MÉTODOS PARA EMPRESAS ==========
 
     @Transactional
-    public Empresas crearEmpresa(Empresas empresa) {
+    public EmpresasDTO crearEmpresa(EmpresasDTO empresasDTO) {
         try {
-            log.info("Creando empresa: {} {}", empresa.getTipoIdentificacion(), empresa.getNumeroIdentificacion());
+            log.info("Creando empresa: {} {}", empresasDTO.getTipoIdentificacion(),
+                    empresasDTO.getNumeroIdentificacion());
 
             if (empresaRepo.existsByTipoAndNumeroIdentificacion(
-                    empresa.getTipoIdentificacion(), empresa.getNumeroIdentificacion())) {
+                    empresasDTO.getTipoIdentificacion().name(),
+                    empresasDTO.getNumeroIdentificacion())) {
                 throw new CreacionException("Empresa ya existe", 1201);
             }
 
-            empresa.setFechaRegistro(Instant.now());
-            empresa.setFechaActualizacion(Instant.now());
-            empresa.setEstado("ACTIVO");
-            empresa.setVersion(BigDecimal.ONE);
-
-            return empresaRepo.save(empresa);
+            Empresas empresa = empresaMapper.toNewEmpresa(empresasDTO);
+            empresa = empresaRepo.save(empresa);
+            return empresaMapper.toDto(empresa);
         } catch (CreacionException e) {
-            log.error("Error crear empresa: {}", e.getMessage());
+            log.error("Error al crear empresa: {}", e.getMessage());
             throw e;
         } catch (Exception e) {
             log.error("Error inesperado al crear empresa", e);
@@ -124,52 +138,60 @@ public class ClienteService {
         }
     }
 
-    public Empresas obtenerEmpresa(String tipo, String numero) {
+    public EmpresasDTO obtenerEmpresa(String tipo, String numero) {
         log.info("Obteniendo empresa: {} {}", tipo, numero);
-        return empresaRepo.findByTipoAndNumeroIdentificacion(tipo, numero)
+        Empresas empresa = empresaRepo.findByTipoAndNumeroIdentificacion(tipo, numero)
                 .orElseThrow(() -> new NotFoundException("Empresa no encontrada", 3201));
+        return empresaMapper.toDto(empresa);
     }
 
-    public List<Empresas> buscarEmpresasPorRazon(String razonSocial) {
-        log.info("Buscando empresas: {}", razonSocial);
+    public List<EmpresasDTO> buscarEmpresasPorRazon(String razonSocial) {
+        log.info("Buscando empresas por razón social: {}", razonSocial);
         List<Empresas> empresas = empresaRepo.findByRazonSocialLikeOrderByRazonSocialAsc("%" + razonSocial + "%");
 
         if (empresas.isEmpty()) {
             throw new NotFoundException("No se encontraron empresas", 3202);
         }
 
-        return empresas.stream().limit(100).toList();
+        return empresas.stream()
+                .limit(100)
+                .map(empresaMapper::toDto)
+                .collect(Collectors.toList());
     }
 
-    public List<Empresas> buscarEmpresasPorNombre(String nombreComercial) {
-        log.info("Buscando empresas: {}", nombreComercial);
-        List<Empresas> empresas = empresaRepo.findByNombreComercialLikeOrderByNombreComercialAsc("%" + nombreComercial + "%");
+    public List<EmpresasDTO> buscarEmpresasPorNombre(String nombreComercial) {
+        log.info("Buscando empresas por nombre comercial: {}", nombreComercial);
+        List<Empresas> empresas = empresaRepo
+                .findByNombreComercialLikeOrderByNombreComercialAsc("%" + nombreComercial + "%");
 
         if (empresas.isEmpty()) {
             throw new NotFoundException("No se encontraron empresas", 3203);
         }
 
-        return empresas.stream().limit(100).toList();
+        return empresas.stream()
+                .limit(100)
+                .map(empresaMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Transactional
-    public Empresas actualizarEmpresa(Integer id, Empresas datos) {
+    public EmpresasDTO actualizarEmpresa(Integer id, EmpresasDTO empresasDTO) {
         try {
             log.info("Actualizando empresa ID: {}", id);
-
             Empresas empresa = empresaRepo.findById(id)
                     .orElseThrow(() -> new NotFoundException("Empresa no encontrada", 3204));
 
-            empresa.setNombreComercial(datos.getNombreComercial());
-            empresa.setRazonSocial(datos.getRazonSocial());
-            empresa.setTipo(datos.getTipo());
-            empresa.setCorreoElectronico(datos.getCorreoElectronico());
-            empresa.setSectorEconomico(datos.getSectorEconomico());
+            empresa.setNombreComercial(empresasDTO.getNombreComercial());
+            empresa.setRazonSocial(empresasDTO.getRazonSocial());
+            empresa.setTipo(empresasDTO.getTipo());
+            empresa.setCorreoElectronico(empresasDTO.getCorreoElectronico());
+            empresa.setSectorEconomico(empresasDTO.getSectorEconomico());
             empresa.setFechaActualizacion(Instant.now());
 
-            return empresaRepo.save(empresa);
+            empresa = empresaRepo.save(empresa);
+            return empresaMapper.toDto(empresa);
         } catch (NotFoundException e) {
-            log.error("Error actualizar empresa: {}", e.getMessage());
+            log.error("Error al actualizar empresa: {}", e.getMessage());
             throw e;
         } catch (Exception e) {
             log.error("Error inesperado al actualizar empresa", e);
@@ -180,10 +202,9 @@ public class ClienteService {
     // ========== MÉTODOS PARA CLIENTES ==========
 
     @Transactional
-    public Clientes crearClientePersona(Integer idPersona, Clientes cliente) {
+    public ClientesDTO crearClientePersona(Integer idPersona, ClientesDTO clientesDTO) {
         try {
             log.info("Creando cliente desde persona ID: {}", idPersona);
-
             Persona persona = personaRepo.findById(idPersona)
                     .orElseThrow(() -> new NotFoundException("Persona no encontrada", 3104));
 
@@ -191,19 +212,18 @@ public class ClienteService {
                 throw new CreacionException("Persona ya es cliente", 1301);
             }
 
-            cliente.setTipoEntidad("PERSONA");
-            //cliente.setIdEntidad(persona);
-            cliente.setNombre(persona.getNombre());
-            cliente.setTipoIdentificacion(persona.getTipoIdentificacion());
-            cliente.setNumeroIdentificacion(persona.getNumeroIdentificacion());
-            cliente.setFechaCreacion(Instant.now());
-            cliente.setFechaActualizacion(Instant.now());
-            cliente.setEstado("ACTIVO");
-            cliente.setVersion(BigDecimal.ONE);
+            clientesDTO.setTipoEntidad(TipoEntidad.PERSONA);
+            clientesDTO.setIdEntidad(persona.getId());
+            clientesDTO.setNombre(persona.getNombre());
+            // Corrección: Convertir String a TipoIdentificacion si es necesario
+            clientesDTO.setTipoIdentificacion(TipoIdentificacion.valueOf(persona.getTipoIdentificacion()));
+            clientesDTO.setNumeroIdentificacion(persona.getNumeroIdentificacion());
 
-            return clienteRepo.save(cliente);
+            Clientes cliente = clientesMapper.toNewCliente(clientesDTO);
+            cliente = clienteRepo.save(cliente);
+            return clientesMapper.toDto(cliente);
         } catch (NotFoundException | CreacionException e) {
-            log.error("Error crear cliente persona: {}", e.getMessage());
+            log.error("Error al crear cliente persona: {}", e.getMessage());
             throw e;
         } catch (Exception e) {
             log.error("Error inesperado al crear cliente persona", e);
@@ -212,10 +232,9 @@ public class ClienteService {
     }
 
     @Transactional
-    public Clientes crearClienteEmpresa(Integer idEmpresa, Clientes cliente) {
+    public ClientesDTO crearClienteEmpresa(Integer idEmpresa, ClientesDTO clientesDTO) {
         try {
             log.info("Creando cliente desde empresa ID: {}", idEmpresa);
-
             Empresas empresa = empresaRepo.findById(idEmpresa)
                     .orElseThrow(() -> new NotFoundException("Empresa no encontrada", 3205));
 
@@ -223,19 +242,18 @@ public class ClienteService {
                 throw new CreacionException("Empresa ya es cliente", 1302);
             }
 
-            cliente.setTipoEntidad("EMPRESA");
-            //cliente.setIdEntidad(empresa);
-            cliente.setNombre(empresa.getRazonSocial());
-            cliente.setTipoIdentificacion(empresa.getTipoIdentificacion());
-            cliente.setNumeroIdentificacion(empresa.getNumeroIdentificacion());
-            cliente.setFechaCreacion(Instant.now());
-            cliente.setFechaActualizacion(Instant.now());
-            cliente.setEstado("ACTIVO");
-            cliente.setVersion(BigDecimal.ONE);
+            clientesDTO.setTipoEntidad(TipoEntidad.EMPRESA);
+            clientesDTO.setIdEntidad(empresa.getId());
+            clientesDTO.setNombre(empresa.getRazonSocial());
+            // Corrección: Convertir String a TipoIdentificacion si es necesario
+            clientesDTO.setTipoIdentificacion(TipoIdentificacion.valueOf(empresa.getTipoIdentificacion()));
+            clientesDTO.setNumeroIdentificacion(empresa.getNumeroIdentificacion());
 
-            return clienteRepo.save(cliente);
+            Clientes cliente = clientesMapper.toNewCliente(clientesDTO);
+            cliente = clienteRepo.save(cliente);
+            return clientesMapper.toDto(cliente);
         } catch (NotFoundException | CreacionException e) {
-            log.error("Error crear cliente empresa: {}", e.getMessage());
+            log.error("Error al crear cliente empresa: {}", e.getMessage());
             throw e;
         } catch (Exception e) {
             log.error("Error inesperado al crear cliente empresa", e);
@@ -243,19 +261,21 @@ public class ClienteService {
         }
     }
 
-    public Clientes obtenerCliente(Integer id) {
+    public ClientesDTO obtenerCliente(Integer id) {
         log.info("Obteniendo cliente ID: {}", id);
-        return clienteRepo.findById(id)
+        Clientes cliente = clienteRepo.findById(id)
                 .orElseThrow(() -> new NotFoundException("Cliente no encontrado", 3301));
+        return clientesMapper.toDto(cliente);
     }
 
-    public Clientes obtenerCliente(String tipo, String numero) {
+    public ClientesDTO obtenerCliente(String tipo, String numero) {
         log.info("Obteniendo cliente: {} {}", tipo, numero);
-        return clienteRepo.findByTipoAndNumeroIdentificacion(tipo, numero)
+        Clientes cliente = clienteRepo.findByTipoAndNumeroIdentificacion(tipo, numero)
                 .orElseThrow(() -> new NotFoundException("Cliente no encontrado", 3302));
+        return clientesMapper.toDto(cliente);
     }
 
-    public List<Clientes> buscarClientes(String nombre) {
+    public List<ClientesDTO> buscarClientes(String nombre) {
         log.info("Buscando clientes: {}", nombre);
         List<Clientes> clientes = clienteRepo.findByNombreLikeOrderByNombreAsc("%" + nombre + "%");
 
@@ -263,27 +283,30 @@ public class ClienteService {
             throw new NotFoundException("No se encontraron clientes", 3303);
         }
 
-        return clientes.stream().limit(100).toList();
+        return clientes.stream()
+                .limit(100)
+                .map(clientesMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Transactional
-    public Clientes actualizarCliente(Integer id, Clientes datos) {
+    public ClientesDTO actualizarCliente(Integer id, ClientesDTO clientesDTO) {
         try {
             log.info("Actualizando cliente ID: {}", id);
-
             Clientes cliente = clienteRepo.findById(id)
                     .orElseThrow(() -> new NotFoundException("Cliente no encontrado", 3304));
 
-            cliente.setTipoCliente(datos.getTipoCliente());
-            cliente.setSegmento(datos.getSegmento());
-            cliente.setCanalAfiliacion(datos.getCanalAfiliacion());
-            cliente.setComentarios(datos.getComentarios());
-            cliente.setEstado(datos.getEstado());
+            cliente.setTipoCliente(clientesDTO.getTipoCliente());
+            cliente.setSegmento(clientesDTO.getSegmento());
+            cliente.setCanalAfiliacion(clientesDTO.getCanalAfiliacion());
+            cliente.setComentarios(clientesDTO.getComentarios());
+            cliente.setEstado(clientesDTO.getEstado().name());
             cliente.setFechaActualizacion(Instant.now());
 
-            return clienteRepo.save(cliente);
+            cliente = clienteRepo.save(cliente);
+            return clientesMapper.toDto(cliente);
         } catch (NotFoundException e) {
-            log.error("Error actualizar cliente: {}", e.getMessage());
+            log.error("Error al actualizar cliente: {}", e.getMessage());
             throw e;
         } catch (Exception e) {
             log.error("Error inesperado al actualizar cliente", e);

@@ -1,4 +1,4 @@
-/*package com.banquito.core.clientes.controlador.mapper;
+package com.banquito.core.clientes.controlador.mapper;
 
 import com.banquito.core.clientes.controlador.dto.RepresentanteEmpresaDTO;
 import com.banquito.core.clientes.enums.EstadoRegistro;
@@ -13,14 +13,14 @@ import org.mapstruct.factory.Mappers;
 public interface RepresentanteEmpresaMapper {
     RepresentanteEmpresaMapper INSTANCE = Mappers.getMapper(RepresentanteEmpresaMapper.class);
 
-    @Mapping(target = "idEmpresa", source = "idEmpresa.id")
-    @Mapping(target = "idCliente", source = "idCliente.id")
+    @Mapping(target = "idEmpresa", source = "empresa.id")
+    @Mapping(target = "idCliente", source = "cliente.id")
     @Mapping(target = "rol", source = "rol", qualifiedByName = "stringToRol")
     @Mapping(target = "estado", source = "estado", qualifiedByName = "stringToEstado")
     RepresentanteEmpresaDTO toDto(RepresentantesEmpresas entity);
 
-    @Mapping(target = "idEmpresa", ignore = true)
-    @Mapping(target = "idCliente", ignore = true)
+    @Mapping(target = "empresa", ignore = true)
+    @Mapping(target = "cliente", ignore = true)
     @Mapping(target = "rol", source = "rol", qualifiedByName = "rolToString")
     @Mapping(target = "estado", source = "estado", qualifiedByName = "estadoToString")
     RepresentantesEmpresas toEntity(RepresentanteEmpresaDTO dto);
@@ -49,7 +49,7 @@ public interface RepresentanteEmpresaMapper {
     @Mapping(target = "fechaAsignacion", expression = "java(java.time.Instant.now())")
     @Mapping(target = "estado", expression = "java(com.banquito.core.clientes.enums.EstadoRegistro.ACTIVO.name())")
     @Mapping(target = "version", expression = "java(java.math.BigDecimal.ONE)")
-    @Mapping(target = "idEmpresa", expression = "java(new Empresas(dto.getIdEmpresa()))")
-    @Mapping(target = "idCliente", expression = "java(new Clientes(dto.getIdCliente()))")
+    @Mapping(target = "empresa", expression = "java(new Empresas(dto.getIdEmpresa()))")
+    @Mapping(target = "cliente", expression = "java(new Clientes(dto.getIdCliente()))")
     RepresentantesEmpresas toNewEntity(RepresentanteEmpresaDTO dto);
-}*/
+}

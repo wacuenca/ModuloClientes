@@ -13,10 +13,8 @@ import java.time.LocalDate;
 @Builder
 public class PersonaDTO {
     private Integer id;
-
     private Integer accionistasEmpresas;
     private Integer clientes;
-
     private TipoIdentificacion tipoIdentificacion;
     private String numeroIdentificacion;
     private String nombre;

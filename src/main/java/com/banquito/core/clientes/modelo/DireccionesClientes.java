@@ -49,6 +49,13 @@ public class DireccionesClientes {
     @Column(name = "version", nullable = false, precision = 9)
     private BigDecimal version;
 
+    public DireccionesClientes() {
+    }
+
+    public DireccionesClientes(Integer id) {
+        this.id = id;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -135,6 +142,45 @@ public class DireccionesClientes {
 
     public void setVersion(BigDecimal version) {
         this.version = version;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((idCliente == null) ? 0 : idCliente.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        DireccionesClientes other = (DireccionesClientes) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (idCliente == null) {
+            if (other.idCliente != null)
+                return false;
+        } else if (!idCliente.equals(other.idCliente))
+            return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "DireccionesClientes [id=" + id + ", idCliente=" + idCliente + ", tipo=" + tipo + ", linea1=" + linea1
+                + ", linea2=" + linea2 + ", codigoPostal=" + codigoPostal + ", codigoGeografico=" + codigoGeografico
+                + ", fechaCreacion=" + fechaCreacion + ", fechaActualizacion=" + fechaActualizacion + ", estado="
+                + estado + ", version=" + version + "]";
     }
 
 }
