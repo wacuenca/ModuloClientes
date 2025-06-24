@@ -208,14 +208,13 @@ public class ClienteService {
             Persona persona = personaRepo.findById(idPersona)
                     .orElseThrow(() -> new NotFoundException("Persona no encontrada", 3104));
 
-            // if (clienteRepo.existsByEntidadAndTipo(persona, "PERSONA")) {
-            //     throw new CreacionException("Persona ya es cliente", 1301);
-            // }
+             if (clienteRepo.existsByEntidadAndTipo(persona, "PERSONA")) {
+                 throw new CreacionException("Persona ya es cliente", 1301);
+             }
 
             clientesDTO.setTipoEntidad(TipoEntidad.PERSONA);
             clientesDTO.setIdEntidad(persona.getId());
             clientesDTO.setNombre(persona.getNombre());
-            // Corrección: Convertir String a TipoIdentificacion si es necesario
             clientesDTO.setTipoIdentificacion(TipoIdentificacion.valueOf(persona.getTipoIdentificacion()));
             clientesDTO.setNumeroIdentificacion(persona.getNumeroIdentificacion());
 
@@ -238,14 +237,13 @@ public class ClienteService {
             Empresas empresa = empresaRepo.findById(idEmpresa)
                     .orElseThrow(() -> new NotFoundException("Empresa no encontrada", 3205));
 
-            // if (clienteRepo.existsByEntidadAndTipo(empresa, "EMPRESA")) {
-            //     throw new CreacionException("Empresa ya es cliente", 1302);
-            // }
+            if (clienteRepo.existsByEntidadAndTipo(empresa, "EMPRESA")) {
+                 throw new CreacionException("Empresa ya es cliente", 1302);
+            }
 
             clientesDTO.setTipoEntidad(TipoEntidad.EMPRESA);
             clientesDTO.setIdEntidad(empresa.getId());
             clientesDTO.setNombre(empresa.getRazonSocial());
-            // Corrección: Convertir String a TipoIdentificacion si es necesario
             clientesDTO.setTipoIdentificacion(TipoIdentificacion.valueOf(empresa.getTipoIdentificacion()));
             clientesDTO.setNumeroIdentificacion(empresa.getNumeroIdentificacion());
 
@@ -268,12 +266,12 @@ public class ClienteService {
         return clientesMapper.toDto(cliente);
     }
 
-    // public ClientesDTO obtenerCliente(String tipo, String numero) {
-    //     log.info("Obteniendo cliente: {} {}", tipo, numero);
-    //     Clientes cliente = clienteRepo.findByTipoAndNumeroIdentificacion(tipo, numero)
-    //             .orElseThrow(() -> new NotFoundException("Cliente no encontrado", 3302));
-    //     return clientesMapper.toDto(cliente);
-    // }
+     public ClientesDTO obtenerCliente(String tipo, String numero) {
+         log.info("Obteniendo cliente: {} {}", tipo, numero);
+         Clientes cliente = clienteRepo.findByTipoAndNumeroIdentificacion(tipo, numero)
+                 .orElseThrow(() -> new NotFoundException("Cliente no encontrado", 3302));
+         return clientesMapper.toDto(cliente);
+     }
 
     public List<ClientesDTO> buscarClientes(String nombre) {
         log.info("Buscando clientes: {}", nombre);
