@@ -10,9 +10,9 @@ import com.banquito.core.clientes.modelo.Empresas;
 
 @Repository
 public interface EmpresasRepositorio extends JpaRepository<Empresas, Integer> {
-    Optional<Empresas> findByTipoAndNumeroIdentificacion(String tipo, String numero);
+    Optional<Empresas> findByTipoAndNumeroIdentificacion(String tipoIdentificacion, String numeroIdentificacion);
 
-    boolean existsByTipoAndNumeroIdentificacion(String tipo, String numero);
+    boolean existsByTipoAndNumeroIdentificacion(String tipoIdentificacion, String numeroIdentificacion);
 
     List<Empresas> findByRazonSocialLikeOrderByRazonSocialAsc(String razonSocial);
 

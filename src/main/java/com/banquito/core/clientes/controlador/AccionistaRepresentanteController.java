@@ -114,15 +114,15 @@ public class AccionistaRepresentanteController {
         }
     }
 
-    @GetMapping("/empresas/{idEmpresa}/representantes")
-    public List<RepresentanteEmpresaDTO> listarRepresentantesActivos(
-            @PathVariable Integer idEmpresa) {
-        try {
-            log.info("Listando representantes activos para empresa ID: {}", idEmpresa);
-            return servicio.listarRepresentantesActivos(idEmpresa);
-        } catch (Exception e) {
-            log.error("Error al listar representantes para empresa ID {}: {}", idEmpresa, e.getMessage());
-            throw e;
-        }
-    }
+    // @GetMapping("/empresas/{idEmpresa}/representantes")
+    // public List<RepresentanteEmpresaDTO> listarRepresentantesActivos(
+    //         @PathVariable Integer idEmpresa) {
+    //     try {
+    //         log.info("Listando representantes activos para empresa ID: {}", idEmpresa);
+    //         return servicio.listarRepresentantesActivos(idEmpresa);
+    //     } catch (Exception e) {
+    //         log.error("Error al listar representantes para empresa ID {}: {}", idEmpresa, e.getMessage());
+    //         throw e;
+    //     }
+    // }
 }

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -60,7 +61,7 @@ public class ContactosTransaccionalesClientesService {
         clienteRepo.findById(idCliente)
                 .orElseThrow(() -> new NotFoundException("Cliente no encontrado", 4003));
 
-        List<ContactosTransaccionalesClientes> contactos = contactoRepo.findByIdCliente(idCliente);
+        Optional<ContactosTransaccionalesClientes> contactos = contactoRepo.findById(idCliente);
         if (contactos.isEmpty()) {
             throw new NotFoundException("No hay contactos para este cliente", 4004);
         }

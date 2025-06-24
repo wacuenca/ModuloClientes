@@ -10,9 +10,10 @@ import com.banquito.core.clientes.modelo.Persona;
 
 @Repository
 public interface PersonaRepositorio extends JpaRepository<Persona, Integer> {
-    Optional<Persona> findByTipoAndNumeroIdentificacion(String tipo, String numero);
 
-    boolean existsByTipoAndNumeroIdentificacion(String tipo, String numero);
+    Optional<Persona> findByTipoIdentificacionAndNumeroIdentificacion(String tipo, String numeroIdentificacion);
+
+    boolean existsByTipoIdentificacionAndNumeroIdentificacion(String tipoIdentificacion, String numeroIdentificacion);
 
     List<Persona> findByNombreLikeOrderByNombreAsc(String nombre);
 

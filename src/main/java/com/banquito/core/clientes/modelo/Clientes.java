@@ -5,6 +5,8 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import com.banquito.core.clientes.enums.EstadoCliente;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.LinkedHashSet;
@@ -53,6 +55,7 @@ public class Clientes {
 
     @Column(name = "tipo_cliente", nullable = false, length = 20)
     private String tipoCliente;
+    
 
     @Column(name = "segmento", nullable = false, length = 20)
     private String segmento;
@@ -66,6 +69,9 @@ public class Clientes {
 
     @Column(name = "fecha_actualizacion", nullable = false)
     private Instant fechaActualizacion;
+
+    @Column(name = "entidad") 
+    private String entidad;
 
     @Column(name = "comentarios", length = 100)
     private String comentarios;
@@ -85,7 +91,7 @@ public class Clientes {
     @OneToMany(mappedBy = "idCliente")
     private Set<DireccionesClientes> direccionesClientes = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "idCliente")
+    @OneToMany(mappedBy = "cliente")
     private Set<RepresentantesEmpresas> representantesEmpresas = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "idCliente")
@@ -206,8 +212,8 @@ public class Clientes {
         return estado;
     }
 
-    public void setEstado(String estado) {
-        this.estado = estado;
+    public void setEstado(EstadoCliente activo) {
+        this.estado = (activo != null) ? activo.name() : null;
     }
 
     public BigDecimal getVersion() {

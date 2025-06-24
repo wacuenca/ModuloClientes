@@ -8,6 +8,8 @@ import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import com.banquito.core.clientes.enums.EstadoCliente;
+
 @Entity
 @Table(name = "personas", schema = "public")
 public class Persona {
@@ -21,6 +23,10 @@ public class Persona {
 
     @Column(name = "numero_identificacion", nullable = false, length = 13)
     private String numeroIdentificacion;
+
+    @Column(name = "tipo", nullable = false, length = 10)
+    private String tipo;
+
 
     @Column(name = "nombre", nullable = false, length = 50)
     private String nombre;
@@ -157,8 +163,8 @@ public class Persona {
         return estado;
     }
 
-    public void setEstado(String estado) {
-        this.estado = estado;
+    public void setEstado(EstadoCliente activo) {
+        this.estado = (activo != null) ? activo.name() : null;
     }
 
     public BigDecimal getVersion() {

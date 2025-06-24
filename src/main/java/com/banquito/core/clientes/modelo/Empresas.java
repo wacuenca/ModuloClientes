@@ -3,6 +3,8 @@ package com.banquito.core.clientes.modelo;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 
+import com.banquito.core.clientes.enums.EstadoCliente;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -49,7 +51,7 @@ public class Empresas {
     private Instant fechaActualizacion;
 
     @Column(name = "estado", nullable = false, length = 15)
-    private String estado;
+    private EstadoCliente estado;
 
     @Column(name = "version", nullable = false, precision = 9)
     private BigDecimal version;
@@ -161,11 +163,11 @@ public class Empresas {
         this.fechaActualizacion = fechaActualizacion;
     }
 
-    public String getEstado() {
+    public EstadoCliente getEstado() {
         return estado;
     }
 
-    public void setEstado(String estado) {
+    public void setEstado(EstadoCliente estado) {
         this.estado = estado;
     }
 

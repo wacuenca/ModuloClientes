@@ -1,6 +1,5 @@
 package com.banquito.core.clientes.modelo;
 
-import com.banquito.core.general.modelo.Sucursales;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -19,9 +18,9 @@ public class ClientesSucursales {
     @JoinColumn(name = "id_cliente", nullable = false)
     private Clientes idCliente;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "codigo_sucursal", nullable = false)
-    private Sucursales codigoSucursal;
+    
+    @Column(name = "codigo_sucursal", nullable = false)
+    private Integer codigoSucursal;
 
     @ColumnDefault("'ACTIVO'")
     @Column(name = "estado", nullable = false, length = 15)
@@ -54,11 +53,11 @@ public class ClientesSucursales {
         this.idCliente = idCliente;
     }
 
-    public Sucursales getCodigoSucursal() {
+    public Integer getCodigoSucursal() {
         return codigoSucursal;
     }
 
-    public void setCodigoSucursal(Sucursales codigoSucursal) {
+    public void setCodigoSucursal(Integer codigoSucursal) {
         this.codigoSucursal = codigoSucursal;
     }
 

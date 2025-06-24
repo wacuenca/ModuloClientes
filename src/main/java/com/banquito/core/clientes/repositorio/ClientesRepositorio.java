@@ -10,9 +10,8 @@ import com.banquito.core.clientes.modelo.Clientes;
 
 @Repository
 public interface ClientesRepositorio extends JpaRepository<Clientes, Integer> {
-    Optional<Clientes> findByTipoAndNumeroIdentificacion(String tipo, String numero);
 
-    boolean existsByEntidadAndTipo(Object entidad, String tipo);
+    
 
     List<Clientes> findByNombreLikeOrderByNombreAsc(String nombre);
 }
