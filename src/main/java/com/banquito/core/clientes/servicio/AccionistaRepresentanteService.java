@@ -46,15 +46,15 @@ public class AccionistaRepresentanteService {
                 throw new NotFoundException("Empresa no encontrada", 3206);
             }
             
-            // if (accionistaDTO.getTipoEntidadParticipe() == TipoEntidadParticipe.PERSONA) {
-            //     if (!clienteRepo.existsByEntidadAndTipo(accionistaDTO.getIdParticipe(), "PERSONA")) {
-            //         throw new CreacionException("Persona debe ser cliente", 1401);
-            //     }
-            // } else if (accionistaDTO.getTipoEntidadParticipe() == TipoEntidadParticipe.EMPRESA) {
-            //     if (!clienteRepo.existsByEntidadAndTipo(accionistaDTO.getIdParticipe(), "EMPRESA")) {
-            //         throw new CreacionException("Empresa debe ser cliente", 1402);
-            //     }
-            // }
+             if (accionistaDTO.getTipoEntidadParticipe() == TipoEntidadParticipe.PERSONA) {
+                 if (!clienteRepo.existsByEntidadAndTipo(accionistaDTO.getIdParticipe(), "PERSONA")) {
+                     throw new CreacionException("Persona debe ser cliente", 1401);
+                 }
+             } else if (accionistaDTO.getTipoEntidadParticipe() == TipoEntidadParticipe.EMPRESA) {
+                 if (!clienteRepo.existsByEntidadAndTipo(accionistaDTO.getIdParticipe(), "EMPRESA")) {
+                     throw new CreacionException("Empresa debe ser cliente", 1402);
+                 }
+             }
             
             if (accionistaRepo.existsByEmpresaIdAndEmpresaParticipeId(accionistaDTO.getIdEmpresa(), accionistaDTO.getIdParticipe())) {
                 throw new CreacionException("Accionista ya existe", 1404);
@@ -147,9 +147,9 @@ public class AccionistaRepresentanteService {
                 throw new CreacionException("Representante debe ser persona", 1501);
             }
             
-            // if (representanteRepo.existsByEmpresaAndCliente(representanteDTO.getIdEmpresa(), representanteDTO.getIdCliente())) {
-            //     throw new CreacionException("Representante ya existe", 1502);
-            // }
+             if (representanteRepo.existsByEmpresaAndCliente(representanteDTO.getIdEmpresa(), representanteDTO.getIdCliente())) {
+                 throw new CreacionException("Representante ya existe", 1502);
+            }
             
             RepresentantesEmpresas representante = representanteMapper.toNewEntity(representanteDTO);
             representante.setFechaCreacion(Instant.now());
@@ -204,23 +204,23 @@ public class AccionistaRepresentanteService {
         }
     }
 
-    // public List<RepresentanteEmpresaDTO> listarRepresentantesActivos(Integer idEmpresa) {
-    //     try {
-    //         if (!empresaRepo.existsById(idEmpresa)) {
-    //             throw new NotFoundException("Empresa no encontrada", 3210);
-    //         }
+     public List<RepresentanteEmpresaDTO> listarRepresentantesActivos(Integer idEmpresa) {
+         try {
+             if (!empresaRepo.existsById(idEmpresa)) {
+                 throw new NotFoundException("Empresa no encontrada", 3210);
+             }
             
-    //         // return representanteRepo.findByEmpresaAndEstado(idEmpresa, EstadoRegistro.ACTIVO.name())
-    //         //         .stream()
-    //         //         .map(representanteMapper::toDto)
-    //         //         .collect(Collectors.toList());
+              return representanteRepo.findByEmpresaAndEstado(idEmpresa, EstadoRegistro.ACTIVO.name())
+                      .stream()
+                      .map(representanteMapper::toDto)
+                    .collect(Collectors.toList());
             
-    //     } catch (NotFoundException e) {
-    //         log.error("Error al listar representantes: {}", e.getMessage());
-    //         throw e;
-    //     } catch (Exception e) {
-    //         log.error("Error inesperado al listar representantes", e);
-    //         throw new ActualizacionException("Error al listar representantes", 2597);
-    //     }
-    // }
+         } catch (NotFoundException e) {
+             log.error("Error al listar representantes: {}", e.getMessage());
+             throw e;
+         } catch (Exception e) {
+             log.error("Error inesperado al listar representantes", e);
+             throw new ActualizacionException("Error al listar representantes", 2597);
+         }
+     }
 }
